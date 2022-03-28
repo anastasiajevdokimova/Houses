@@ -1,6 +1,9 @@
+using Houses.ApplicationServices.Services;
+using Houses.Core.ServiceInerface;
+using Houses.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -15,8 +18,9 @@ namespace Houses
     {
         public Startup(IConfiguration configuration)
         {
-            Configuration = configuration;
+            _config = configuration;
         }
+        public IConfiguration _config { get; }
 
         public IConfiguration Configuration { get; }
 
@@ -24,6 +28,8 @@ namespace Houses
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
+            services.AddDbContext<HousesDbContext>(options => options.UseSqlServer(_config["DefaultConnection"]));
+            services.AddScoped<IHouseService, HouseServices>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
